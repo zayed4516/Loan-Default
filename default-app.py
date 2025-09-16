@@ -1,12 +1,12 @@
 import streamlit as st
 import pandas as pd
-import pickle
+from catboost import CatBoostClassifier
 
 # ================================
-# 1. Load the trained model
+# 1. Load the trained CatBoost model
 # ================================
-with open("catboost_model.pkl", "rb") as f:
-    model = pickle.load(f)
+model = CatBoostClassifier()
+model.load_model("catboost_model.cbm")
 
 st.title("📊 Loan Default Prediction App")
 st.write("Fill in the applicant details below to predict loan default.")

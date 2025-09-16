@@ -2,7 +2,9 @@ import streamlit as st
 import pandas as pd
 import pickle
 
-# تحميل النموذج
+# ================================
+# 1. Load the trained model
+# ================================
 with open("catboost_model.pkl", "rb") as f:
     model = pickle.load(f)
 
@@ -10,7 +12,7 @@ st.title("📊 Loan Default Prediction App")
 st.write("Fill in the applicant details below to predict loan default.")
 
 # ================================
-# 1. Define mappings (must match training encodings)
+# 2. Define mappings (must match training encodings)
 # ================================
 education_map = {"High School": 0, "Bachelor": 1, "Master": 2, "PhD": 3}
 employment_map = {"Full-time": 0, "Part-time": 1, "Self-employed": 2, "Unemployed": 3}
@@ -18,7 +20,7 @@ marital_map = {"Single": 0, "Married": 1, "Divorced": 2, "Widowed": 3}
 loan_purpose_map = {"Personal": 0, "Education": 1, "Medical": 2, "Home": 3, "Car": 4, "Other": 5}
 
 # ================================
-# 2. Collect inputs
+# 3. Collect user inputs
 # ================================
 age = st.number_input("Age", min_value=18, max_value=100, value=30)
 income = st.number_input("Income ($)", min_value=0, max_value=1000000, value=50000)
@@ -39,7 +41,7 @@ loan_purpose = st.selectbox("Loan Purpose", list(loan_purpose_map.keys()))
 has_cosigner = st.selectbox("Has Co-Signer", [0, 1])
 
 # ================================
-# 3. Transform categorical to numbers
+# 4. Transform categorical inputs
 # ================================
 input_data = pd.DataFrame({
     "Age": [age],
@@ -61,11 +63,11 @@ input_data = pd.DataFrame({
 })
 
 # ================================
-# 4. Prediction
+# 5. Make Prediction
 # ================================
 if st.button("Predict Default"):
     prediction = model.predict(input_data)[0]
-    proba = model.predict_proba(input_data)[0][1]  # احتمالية الافتراضية
+    proba = model.predict_proba(input_data)[0][1]
 
     if prediction == 1:
         st.error(f"⚠️ This loan is likely to **default**. (Probability: {proba:.2f})")

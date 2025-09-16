@@ -7,34 +7,60 @@ with open("catboost_model.pkl", "rb") as f:
     model = pickle.load(f)
 
 # ===== Streamlit UI =====
-st.set_page_config(page_title="Loan Default Prediction", page_icon="💳", layout="wide")  # layout wide للسماح بالتحكم بالمساحة
+st.set_page_config(page_title="Loan Default Prediction", page_icon="💳", layout="wide")
 
-# ===== CSS لتعديل الستايل =====
+# ===== CSS لتعديل الخلفية والـ sidebar =====
 st.markdown(
     """
     <style>
     /* خلفية سوداء للصفحة */
-    body, .stApp {
+    .stApp {
         background-color: #000000;
         color: white;
     }
 
-    /* تكبير sidebar */
-    .css-1d391kg {  /* هذا class للsidebar في بعض النسخ */
+    /* خلفية sidebar سوداء */
+    .css-1d391kg {  /* ممكن يختلف حسب نسخة Streamlit */
+        background-color: #111111;
+        color: white;
         width: 350px;
     }
 
-    /* تعديل ألوان sidebar inputs */
-    .stSidebar .stSelectbox, .stSidebar .stNumberInput, .stSidebar .stRadio {
-        background-color: #111111;
-        color: white;
+    /* تكبير حجم النصوص داخل sidebar */
+    .css-1d391kg label, .css-1d391kg div {
+        color: white !important;
     }
 
-    /* تخصيص أزرار */
+    /* تصميم أزرار Prediction */
     div.stButton > button:first-child {
         background-color: #2E86C1;
         color: white;
+        height: 50px;
+        width: 100%;
+        font-size: 18px;
     }
+
+    /* تصميم الصندوق Prediction */
+    .prediction-box {
+        padding: 20px;
+        border-radius: 12px;
+        text-align: center;
+        margin-top: 20px;
+        font-size: 18px;
+    }
+
+    .high-risk {
+        background-color: #FDEDEC;
+        border: 1px solid #E74C3C;
+        color: #C0392B;
+    }
+
+    .low-risk {
+        background-color: #E8F8F5;
+        border: 1px solid #1ABC9C;
+        color: #16A085;
+    }
+
     </style>
     """, unsafe_allow_html=True
 )
@@ -107,36 +133,23 @@ input_data = pd.DataFrame([{
     "interest_value": loan_amount * interest_rate
 }])
 
-# ===== Prediction Section على اليمين =====
-right_col, _ = st.columns([3,1])  # يعطي مساحة أكبر للنتيجة على اليمين
+# ===== Prediction Section في منتصف الصفحة =====
+st.markdown("<h2 style='text-align: center; color: #2E86C1;'>🔮 Prediction</h2>", unsafe_allow_html=True)
+if st.button("Predict Default", use_container_width=True):
+    try:
+        prediction = model.predict(input_data)[0]
+        proba = model.predict_proba(input_data)[0][1]  # احتمال التعثر
 
-with right_col:
-    st.markdown("<h2 style='text-align: center; color: #2E86C1;'>🔮 Prediction</h2>", unsafe_allow_html=True)
-    if st.button("Predict Default", use_container_width=True):
-        try:
-            prediction = model.predict(input_data)[0]
-            proba = model.predict_proba(input_data)[0][1]  # احتمال التعثر
+        if prediction == 1:
+            st.markdown(
+                f"<div class='prediction-box high-risk'>⚠️ High Risk of Default<br>Probability: <b>{proba:.2%}</b></div>",
+                unsafe_allow_html=True
+            )
+        else:
+            st.markdown(
+                f"<div class='prediction-box low-risk'>✅ Low Risk of Default<br>Probability: <b>{proba:.2%}</b></div>",
+                unsafe_allow_html=True
+            )
 
-            if prediction == 1:
-                st.markdown(
-                    f"""
-                    <div style="padding:20px; border-radius:12px; background-color:#FDEDEC; border:1px solid #E74C3C; text-align:center;">
-                        <h2 style="color:#C0392B;">⚠️ High Risk of Default</h2>
-                        <h3 style="color:#C0392B;">The applicant is likely to default.</h3>
-                        <p style="font-size:18px;">Probability of Default: <b>{proba:.2%}</b></p>
-                    </div>
-                    """, unsafe_allow_html=True
-                )
-            else:
-                st.markdown(
-                    f"""
-                    <div style="padding:20px; border-radius:12px; background-color:#E8F8F5; border:1px solid #1ABC9C; text-align:center;">
-                        <h2 style="color:#16A085;">✅ Low Risk of Default</h2>
-                        <h3 style="color:#16A085;">The applicant is unlikely to default.</h3>
-                        <p style="font-size:18px;">Probability of Default: <b>{proba:.2%}</b></p>
-                    </div>
-                    """, unsafe_allow_html=True
-                )
-
-        except Exception as e:
-            st.error(f"⚠️ Error during prediction: {e}")
+    except Exception as e:
+        st.error(f"⚠️ Error during prediction: {e}")

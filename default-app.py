@@ -86,14 +86,12 @@ st.markdown("""
     
     /* Header styling */
     .main-header {
-        background: linear-gradient(90deg, #3498db, #2980b9);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
+        color: #FFFFFF;
         text-align: center;
         font-size: 3rem;
         font-weight: 700;
         margin-bottom: 1rem;
-        text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
     }
     
     .sub-header {

@@ -6,9 +6,16 @@ from catboost import CatBoostClassifier
 model = CatBoostClassifier()
 model.load_model("catboost_model.cbm")
 
+# Define the features (same order as training)
+FEATURES = [
+    "Age","Income","LoanAmount","CreditScore","MonthsEmployed","NumCreditLines",
+    "InterestRate","LoanTerm","DTIRatio","Education","EmploymentType","MaritalStatus",
+    "HasMortgage","HasDependents","LoanPurpose","HasCoSigner"
+]
+
 st.title("Loan Default Prediction App")
 
-# Collect inputs from user
+# User input
 age = st.number_input("Age", min_value=18, max_value=100, value=30)
 income = st.number_input("Income", min_value=0, value=50000)
 loan_amount = st.number_input("Loan Amount", min_value=0, value=20000)
@@ -19,7 +26,7 @@ interest_rate = st.number_input("Interest Rate", min_value=0.0, value=10.0)
 loan_term = st.number_input("Loan Term (months)", min_value=6, value=36)
 dti_ratio = st.number_input("DTI Ratio", min_value=0.0, max_value=1.0, value=0.4)
 
-education = st.selectbox("Education", [0, 1, 2, 3])  # replace with real mapping if you had labels
+education = st.selectbox("Education", [0, 1, 2, 3])
 employment_type = st.selectbox("Employment Type", [0, 1, 2, 3])
 marital_status = st.selectbox("Marital Status", [0, 1, 2, 3])
 has_mortgage = st.selectbox("Has Mortgage", [0, 1])
@@ -28,7 +35,7 @@ loan_purpose = st.selectbox("Loan Purpose", [0, 1, 2, 3, 4])
 has_cosigner = st.selectbox("Has CoSigner", [0, 1])
 
 if st.button("Predict"):
-    # Order of features must match training
+    # Build input row
     input_dict = {
         "Age": age,
         "Income": income,
@@ -48,7 +55,12 @@ if st.button("Predict"):
         "HasCoSigner": has_cosigner
     }
 
-    input_data = pd.DataFrame([input_dict])
+    # Convert to dataframe with correct column order
+    input_data = pd.DataFrame([[input_dict[f] for f in FEATURES]], columns=FEATURES)
+
+    # Debug: show dataframe
+    st.write("### Input Data Sent to Model:")
+    st.write(input_data)
 
     # Predict
     prediction = model.predict(input_data)[0]

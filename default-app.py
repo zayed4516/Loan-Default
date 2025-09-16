@@ -19,7 +19,18 @@ with col1:
     age = st.number_input("Age", min_value=18, max_value=100, value=30)
     income = st.number_input("Income ($)", min_value=0, value=50000)
     loan_amount = st.number_input("Loan Amount ($)", min_value=0, value=20000)
-    credit_score = st.number_input("Credit Score", min_value=300, max_value=850, value=650)
+    
+    # ===== Credit Score as discrete category =====
+    credit_score_map = {
+        "Poor (300-579)": 0,
+        "Fair (580-669)": 1,
+        "Good (670-739)": 2,
+        "Very Good (740-799)": 3,
+        "Excellent (800-850)": 4
+    }
+    credit_score = st.selectbox("Credit Score", list(credit_score_map.keys()))
+    credit_score_value = credit_score_map[credit_score]
+
     months_employed = st.number_input("Months Employed", min_value=0, value=4)
     num_credit_lines = st.number_input("Number of Credit Lines", min_value=0, value=1)
 
@@ -48,7 +59,7 @@ input_data = pd.DataFrame([{
     "Age": age,
     "Income": income,
     "LoanAmount": loan_amount,
-    "CreditScore": credit_score,
+    "CreditScore": credit_score_value,
     "MonthsEmployed": months_employed,
     "NumCreditLines": num_credit_lines,
     "InterestRate": interest_rate,

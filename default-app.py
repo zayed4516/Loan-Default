@@ -98,11 +98,12 @@ st.markdown("""
     
     .sub-header {
         text-align: center;
-        color: #7f8c8d;
+        color: #FFFFFF;
         font-size: 1.2rem;
         font-weight: 400;
         margin-bottom: 2rem;
         line-height: 1.6;
+        text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
     }
     
     /* Button styling */

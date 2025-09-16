@@ -9,18 +9,21 @@ with open("catboost_model.pkl", "rb") as f:
 # ===== Streamlit UI =====
 st.set_page_config(page_title="Loan Default Prediction", page_icon="💳", layout="centered")
 
+# ===== عرض الصورة =====
+st.image("bank.jpg", use_column_width=True)
+
 st.markdown("<h1 style='text-align: center; color: #2E86C1;'>💳 Loan Default Prediction App</h1>", unsafe_allow_html=True)
 st.write("### Enter applicant details below to predict the likelihood of loan default.")
 
-# ===== User Inputs =====
-col1, col2 = st.columns(2)
+# ===== Sidebar Inputs =====
+with st.sidebar:
+    st.header("Applicant Details")
 
-with col1:
     age = st.number_input("Age", min_value=18, max_value=100, value=30)
     income = st.number_input("Income ($)", min_value=0, value=50000)
     loan_amount = st.number_input("Loan Amount ($)", min_value=0, value=20000)
     
-    # ===== Credit Score as discrete category =====
+    # Credit Score as discrete category
     credit_score_map = {
         "Poor (300-579)": 0,
         "Fair (580-669)": 1,
@@ -34,7 +37,6 @@ with col1:
     months_employed = st.number_input("Months Employed", min_value=0, value=4)
     num_credit_lines = st.number_input("Number of Credit Lines", min_value=0, value=1)
 
-with col2:
     interest_rate = st.number_input("Interest Rate (%)", min_value=0.0, value=10.5, step=0.1)
     loan_term = st.number_input("Loan Term (months)", min_value=1, value=36)
     dti_ratio = st.number_input("Debt-to-Income Ratio", min_value=0.0, max_value=1.0, value=0.3)
@@ -43,9 +45,9 @@ with col2:
     marital_status = st.selectbox("Marital Status", ["Single", "Married", "Divorced"])
     loan_purpose = st.selectbox("Loan Purpose", ["Personal", "Business", "Education", "Medical"])
 
-has_mortgage = st.radio("Has Mortgage", ["Yes", "No"], horizontal=True)
-has_dependents = st.radio("Has Dependents", ["Yes", "No"], horizontal=True)
-has_cosigner = st.radio("Has Co-Signer", ["Yes", "No"], horizontal=True)
+    has_mortgage = st.radio("Has Mortgage", ["Yes", "No"], horizontal=True)
+    has_dependents = st.radio("Has Dependents", ["Yes", "No"], horizontal=True)
+    has_cosigner = st.radio("Has Co-Signer", ["Yes", "No"], horizontal=True)
 
 # ===== Mapping for categorical features =====
 education_map = {"High School": 0, "Bachelor": 1, "Master": 2, "PhD": 3}
@@ -75,8 +77,9 @@ input_data = pd.DataFrame([{
     "interest_value": loan_amount * interest_rate
 }])
 
-# ===== Prediction Section =====
-if st.button("🔮 Predict Default", use_container_width=True):
+# ===== Prediction Section in center =====
+st.markdown("<h2 style='text-align: center; color: #2E86C1;'>🔮 Prediction</h2>", unsafe_allow_html=True)
+if st.button("Predict Default", use_container_width=True):
     try:
         prediction = model.predict(input_data)[0]
         proba = model.predict_proba(input_data)[0][1]  # احتمال التعثر

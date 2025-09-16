@@ -94,7 +94,6 @@ st.markdown("""
         font-weight: 700;
         margin-bottom: 1rem;
         text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
-        color:#FFFFFF;
     }
     
     .sub-header {
@@ -104,7 +103,6 @@ st.markdown("""
         font-weight: 400;
         margin-bottom: 2rem;
         line-height: 1.6;
-        color:#FFFFFF;
     }
     
     /* Button styling */
